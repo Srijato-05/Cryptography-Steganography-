@@ -1,0 +1,52 @@
+package main;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class App {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            // Create frame
+            JFrame frame = new JFrame("Steganography Application");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 600);
+            frame.setLayout(new GridBagLayout());
+            frame.getContentPane().setBackground(new Color(30, 30, 30)); // Dark theme
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+
+            // Create heading
+            JLabel heading = new JLabel("Encryption");
+            heading.setFont(new Font("Arial", Font.BOLD, 24));
+            heading.setForeground(Color.WHITE);
+            frame.add(heading, gbc);
+
+            // Create buttons
+            JButton encryptButton = new JButton("Encrypt & Hide Message");
+            JButton decryptButton = new JButton("Retrieve & Decrypt Message");
+
+            // Style buttons
+            encryptButton.setFont(new Font("Arial", Font.BOLD, 16));
+            encryptButton.setBackground(new Color(50, 150, 250));
+            encryptButton.setForeground(Color.WHITE);
+            encryptButton.setFocusPainted(false);
+
+            decryptButton.setFont(new Font("Arial", Font.BOLD, 16));
+            decryptButton.setBackground(new Color(250, 100, 100));
+            decryptButton.setForeground(Color.WHITE);
+            decryptButton.setFocusPainted(false);
+
+            // Add buttons to layout
+            gbc.gridy = 1;
+            frame.add(encryptButton, gbc);
+            gbc.gridy = 2;
+            frame.add(decryptButton, gbc);
+
+            // Make frame visible
+            frame.setVisible(true);
+        });
+    }
+}
