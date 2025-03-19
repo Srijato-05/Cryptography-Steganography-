@@ -2,42 +2,36 @@ package main.encryption;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.Base64;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 
 public class Encryption {
-
     private static final String ALGORITHM = "AES";
-    private static final byte[] PASSKEY = Arrays.copyOf("MySecurePassKey123".getBytes(), 16); // Ensures exactly 16 bytes
+    private static final String FILE_PATH = "src/main/input_output/encrypted_message.txt";
 
-
-    public static String encrypt(String message) throws Exception {
-        SecretKeySpec secretKey = new SecretKeySpec(PASSKEY, ALGORITHM);
+    public static String encrypt(String message, String passkey) throws Exception {
+        byte[] key = generateKey(passkey);
         Cipher cipher = Cipher.getInstance(ALGORITHM);
+        SecretKeySpec secretKey = new SecretKeySpec(key, ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        byte[] encryptedBytes = cipher.doFinal(message.getBytes());
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+        byte[] encryptedBytes = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
+        String encryptedMessage = Base64.getEncoder().encodeToString(encryptedBytes);
+
+        // Save encrypted message to file
+        Files.write(Paths.get(FILE_PATH), encryptedMessage.getBytes(StandardCharsets.UTF_8));
+        return encryptedMessage;
     }
 
-    public static String decrypt(String encryptedMessage) throws Exception {
-        SecretKeySpec secretKey = new SecretKeySpec(PASSKEY, ALGORITHM);
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedMessage));
-        return new String(decryptedBytes);
+    private static byte[] generateKey(String passkey) throws Exception {
+        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        byte[] key = sha.digest(passkey.getBytes(StandardCharsets.UTF_8));
+        return java.util.Arrays.copyOf(key, 16); // Use only first 16 bytes for AES-128
     }
 
-    public static void main(String[] args) {
-        try {
-            String message = "Hello, Steganography!";
-            String encrypted = encrypt(message);
-            String decrypted = decrypt(encrypted);
-
-            System.out.println("Original: " + message);
-            System.out.println("Encrypted: " + encrypted);
-            System.out.println("Decrypted: " + decrypted);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static String getFilePath() {
+        return FILE_PATH;
     }
 }

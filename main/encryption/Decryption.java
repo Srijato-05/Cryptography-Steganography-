@@ -1,35 +1,44 @@
 package main.encryption;
 
-import java.util.Scanner;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 
-// Interface for decryption
-interface Decryptor {
-    String decrypt(String encryptedMessage, String passkey);
-}
+public class Decryption {
+    private static final String ALGORITHM = "AES";
+    private static final String FILE_PATH = "src/main/input_output/encrypted_message.txt";
 
-// Concrete implementation of Decryptor
-public class Decryption implements Decryptor {
+    public static String decrypt(String passkey) throws Exception {
+        byte[] key = generateKey(passkey);
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        SecretKeySpec secretKey = new SecretKeySpec(key, ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-    @Override
-    public String decrypt(String encryptedMessage, String passkey) {
-        // Simple key-based transformation (for now, future improvements possible)
-        String combined = new String(Base64.getDecoder().decode(encryptedMessage));
-        return combined.replace(passkey, "");
+        // Read encrypted message from file
+        String encryptedMessage = new String(Files.readAllBytes(Paths.get(FILE_PATH)), StandardCharsets.UTF_8).trim();
+        System.out.println("Encrypted File Content: " + encryptedMessage); // Debugging
+        System.out.println("Passkey Used for Decryption: " + passkey); // Debugging
+
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            String decryptedMessage = new String(decryptedBytes, StandardCharsets.UTF_8);
+            System.out.println("Decrypted Message: " + decryptedMessage); // Debugging
+            return decryptedMessage;
+        } catch (Exception e) {
+            System.err.println("Decryption Error: " + e.getMessage());
+            e.printStackTrace();
+            return "Decryption Failed!";
+        }
     }
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the encrypted message: ");
-        String encrypted = scanner.nextLine();
-        System.out.print("Enter the passkey: ");
-        String passkey = scanner.nextLine();
-        scanner.close();
-
-        Decryptor decryptor = new Decryption();
-        String decrypted = decryptor.decrypt(encrypted, passkey);
-
-        System.out.println("Encrypted: " + encrypted);
-        System.out.println("Decrypted: " + decrypted);
+    private static byte[] generateKey(String passkey) throws Exception {
+        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        byte[] key = sha.digest(passkey.getBytes(StandardCharsets.UTF_8));
+        return java.util.Arrays.copyOf(key, 16); // Use only first 16 bytes for AES-128
     }
 }
