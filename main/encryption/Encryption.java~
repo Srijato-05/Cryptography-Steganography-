@@ -8,9 +8,11 @@ import java.security.MessageDigest;
 import java.util.Base64;
 import java.nio.charset.StandardCharsets;
 
-public class Encryption extends AbstractCrypto {
-    @Override
-    public String process(String message, String passkey) throws Exception {
+public class Encryption {
+    private static final String ALGORITHM = "AES";
+    private static final String FILE_PATH = "src/main/input_output/encrypted_message.txt";
+
+    public static String encrypt(String message, String passkey) throws Exception {
         byte[] key = generateKey(passkey);
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         SecretKeySpec secretKey = new SecretKeySpec(key, ALGORITHM);
@@ -18,13 +20,18 @@ public class Encryption extends AbstractCrypto {
         byte[] encryptedBytes = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
         String encryptedMessage = Base64.getEncoder().encodeToString(encryptedBytes);
 
+        // Save encrypted message to file
         Files.write(Paths.get(FILE_PATH), encryptedMessage.getBytes(StandardCharsets.UTF_8));
         return encryptedMessage;
     }
 
-    private byte[] generateKey(String passkey) throws Exception {
+    private static byte[] generateKey(String passkey) throws Exception {
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         byte[] key = sha.digest(passkey.getBytes(StandardCharsets.UTF_8));
-        return java.util.Arrays.copyOf(key, 16);
+        return java.util.Arrays.copyOf(key, 16); // Use only first 16 bytes for AES-128
+    }
+
+    public static String getFilePath() {
+        return FILE_PATH;
     }
 }

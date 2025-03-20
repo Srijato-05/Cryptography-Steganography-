@@ -1,13 +1,12 @@
 package main;
 
-import main.encryption.Decryption;
 import main.encryption.Encryption;
-
+import main.encryption.Decryption;
+import main.ui.AppUI;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 
 public class App {
     public static void main(String[] args) {
@@ -28,7 +27,8 @@ public class App {
                         String passkey = passkeyField.getText();
                         if (!message.isEmpty() && !passkey.isEmpty()) {
                             try {
-                                String encryptedMessage = Encryption.encrypt(message, passkey);
+                                Encryption encryption = new Encryption();
+                                String encryptedMessage = encryption.process(message, passkey);
                                 File file = new File("src/main/input_output/encrypted_message.txt");
                                 FileWriter writer = new FileWriter(file);
                                 writer.write(encryptedMessage);
@@ -54,11 +54,11 @@ public class App {
                         String passkey = passkeyField.getText();
                         if (!passkey.isEmpty()) {
                             try {
-                                JFileChooser fileChooser = new JFileChooser();
+                                JFileChooser fileChooser = new JFileChooser("src/main/input_output/");
                                 int returnValue = fileChooser.showOpenDialog(null);
                                 if (returnValue == JFileChooser.APPROVE_OPTION) {
-                                    File selectedFile = fileChooser.getSelectedFile();
-                                    String decryptedMessage = Decryption.decrypt(passkey);
+                                    Decryption decryption = new Decryption();
+                                    String decryptedMessage = decryption.process(passkey, "");
                                     JOptionPane.showMessageDialog(appUI.getFrame(), "Decrypted Message:\n" + decryptedMessage, "Decryption Success", JOptionPane.INFORMATION_MESSAGE);
                                 }
                             } catch (Exception ex) {
