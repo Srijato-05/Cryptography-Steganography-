@@ -1,7 +1,7 @@
 package main.ui;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public abstract class AbstractUI {
     protected JFrame frame;
@@ -19,7 +19,7 @@ public abstract class AbstractUI {
 
     protected abstract void initializeComponents();
 
-    protected void styleButton(JButton button, Color color) {
+    private void styleButton(JButton button, Color color) {  // Changed to private
         button.setFont(new Font("Arial", Font.BOLD, 16));
         button.setBackground(color);
         button.setForeground(Color.WHITE);
