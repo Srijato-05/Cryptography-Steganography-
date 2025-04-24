@@ -83,7 +83,6 @@ public class AudioSteganography {
         }
     }
 
-    // ✅ Write WAV file with original header and modified audio
     private void writeAudioBytes(File originalFile, byte[] newAudioData, File outputFile) throws Exception {
         byte[] originalBytes = Files.readAllBytes(originalFile.toPath());
         byte[] header = Arrays.copyOfRange(originalBytes, 0, 44); // WAV header

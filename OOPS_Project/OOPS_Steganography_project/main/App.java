@@ -3,7 +3,6 @@ package main;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
